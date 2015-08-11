@@ -246,6 +246,19 @@ static dispatch_once_t onceToken;
     }
 }
 
+- (void)preparePlayerItem: (NSUInteger )startAt
+{
+    [self willPlayPlayerItemAtIndex:startAt];
+    [self.audioPlayer pause];
+    [self.audioPlayer removeAllItems];
+    pauseReasonForced = YES;
+    BOOL findInPlayerItems = NO;
+    findInPlayerItems = [self findSourceInPlayerItems:startAt];
+    if (!findInPlayerItems) {
+        [self getSourceURLAtIndex:startAt preBuffer:NO];
+    }
+}
+
 - (NSUInteger)hysteriaPlayerItemsCount
 {
     if ([self.datasource respondsToSelector:@selector(hysteriaPlayerNumberOfItems)]) {
@@ -637,7 +650,7 @@ static dispatch_once_t onceToken;
             if ([self.delegate respondsToSelector:@selector(hysteriaPlayerReadyToPlay:)]) {
                 [self.delegate hysteriaPlayerReadyToPlay:HysteriaPlayerReadyToPlayPlayer];
             }
-            if (![self isPlaying]) {
+            if (![self isPlaying] && !pauseReasonForced) {
                 [self.audioPlayer play];
             }
         } else if (self.audioPlayer.status == AVPlayerStatusFailed) {
