@@ -123,6 +123,7 @@ typedef NS_ENUM(NSUInteger, HysteriaPlayerShuffleMode) {
  */
 - (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSUInteger)index;
 - (void)fetchAndPlayPlayerItem: (NSUInteger )startAt;
+- (void)preparePlayerItem: (NSUInteger )startAt; //类似fetchAndPlayPlayerItem，但不播放
 - (void)removeAllItems;
 - (void)removeQueuesAtPlayer;
 /*!
