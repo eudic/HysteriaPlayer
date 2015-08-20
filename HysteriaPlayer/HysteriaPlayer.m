@@ -110,13 +110,14 @@ static dispatch_once_t onceToken;
 - (void)playEmptySound
 {
     //play .1 sec empty sound
-    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-    NSString *filepath = [bundle pathForResource:@"point1sec" ofType:@"mp3"];
-    if ([[NSFileManager defaultManager]fileExistsAtPath:filepath]) {
-        self.isInEmptySound = YES;
-        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:filepath]];
-        self.audioPlayer = [AVQueuePlayer queuePlayerWithItems:[NSArray arrayWithObject:playerItem]];
-    }
+//    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+//    NSString *filepath = [bundle pathForResource:@"point1sec" ofType:@"mp3"];
+//    if ([[NSFileManager defaultManager]fileExistsAtPath:filepath]) {
+//        self.isInEmptySound = YES;
+//        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:filepath]];
+//        self.audioPlayer = [AVQueuePlayer queuePlayerWithItems:[NSArray arrayWithObject:playerItem]];
+//    }
+        self.audioPlayer = [AVQueuePlayer queuePlayerWithItems:nil];
 }
 
 - (void)backgroundPlayable
@@ -226,7 +227,7 @@ static dispatch_once_t onceToken;
     }
     self.lastItemIndex = index;
     [self.playedItems addObject:@(index)];
-
+    
     if ([self.delegate respondsToSelector:@selector(hysteriaPlayerWillChangedAtIndex:)]) {
         [self.delegate hysteriaPlayerWillChangedAtIndex:self.lastItemIndex];
     }
@@ -320,7 +321,7 @@ static dispatch_once_t onceToken;
     if (_shuffleMode == HysteriaPlayerShuffleModeOn || _repeatMode == HysteriaPlayerRepeatModeOnce) {
         return;
     }
-
+    
     NSInteger nowIndex = self.lastItemIndex;
     BOOL findInPlayerItems = NO;
     NSInteger itemsCount = [self hysteriaPlayerItemsCount];
@@ -763,7 +764,7 @@ static dispatch_once_t onceToken;
     if(![item isEqual:self.audioPlayer.currentItem]){
         return;
     }
-
+    
     NSNumber *CHECK_Order = [self getHysteriaIndex:self.audioPlayer.currentItem];
     if (CHECK_Order) {
         if (_repeatMode == HysteriaPlayerRepeatModeOnce) {
@@ -807,7 +808,7 @@ static dispatch_once_t onceToken;
             return NSNotFound;
         }
     }
-
+    
     NSInteger index;
     do {
         index = arc4random() % itemsCount;
@@ -835,8 +836,8 @@ static dispatch_once_t onceToken;
     [self removeAllItems];
     
     [self.audioPlayer pause];
-    self.delegate = nil;
-    self.datasource = nil;
+//    self.delegate = nil;
+//    self.datasource = nil;
     self.audioPlayer = nil;
     
     onceToken = 0;
