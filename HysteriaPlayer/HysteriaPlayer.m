@@ -123,8 +123,11 @@ static dispatch_once_t onceToken;
 - (void)backgroundPlayable
 {
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-    //开启后 会和DeepSleep冲突，导致退到后台再进入前台后RemoteControl无法显示
-    //[[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    //iOS9 开启后 会和DeepSleep冲突，导致退到后台再进入前台后RemoteControl无法显示
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 9.0) {
+        [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    }
+
     if (audioSession.category != AVAudioSessionCategoryPlayback) {
         UIDevice *device = [UIDevice currentDevice];
         if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
