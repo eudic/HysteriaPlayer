@@ -110,51 +110,50 @@ static dispatch_once_t onceToken;
 - (void)playEmptySound
 {
     //play .1 sec empty sound
-//    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-//    NSString *filepath = [bundle pathForResource:@"point1sec" ofType:@"mp3"];
-//    if ([[NSFileManager defaultManager]fileExistsAtPath:filepath]) {
-//        self.isInEmptySound = YES;
-//        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:filepath]];
-//        self.audioPlayer = [AVQueuePlayer queuePlayerWithItems:[NSArray arrayWithObject:playerItem]];
-//    }
-        self.audioPlayer = [AVQueuePlayer queuePlayerWithItems:nil];
+    //    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    //    NSString *filepath = [bundle pathForResource:@"point1sec" ofType:@"mp3"];
+    //    if ([[NSFileManager defaultManager]fileExistsAtPath:filepath]) {
+    //        self.isInEmptySound = YES;
+    //        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:filepath]];
+    //        self.audioPlayer = [AVQueuePlayer queuePlayerWithItems:[NSArray arrayWithObject:playerItem]];
+    //    }
+    self.audioPlayer = [AVQueuePlayer queuePlayerWithItems:nil];
 }
 
 - (void)backgroundPlayable
 {
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-    //iOS9 开启后 会和DeepSleep冲突，导致退到后台再进入前台后RemoteControl无法显示
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 9.0) {
-        [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    }
-
+    //不再调用Begin 和 EndReceivingRemoteControlEvents 而改在程序启动和关闭的时候调用
+    //[[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    
+    
     //if (audioSession.category != AVAudioSessionCategoryPlayback) {
-        UIDevice *device = [UIDevice currentDevice];
-        if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
-            if (device.multitaskingSupported) {
-                
-                NSError *aError = nil;
-                [audioSession setCategory:AVAudioSessionCategoryPlayback error:&aError];
-                if (aError) {
-                    if (!self.disableLogs) {
-                        NSLog(@"set category error:%@",[aError description]);
-                    }
+    UIDevice *device = [UIDevice currentDevice];
+    if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
+        if (device.multitaskingSupported) {
+            
+            NSError *aError = nil;
+            [audioSession setCategory:AVAudioSessionCategoryPlayback error:&aError];
+            if (aError) {
+                if (!self.disableLogs) {
+                    NSLog(@"set category error:%@",[aError description]);
                 }
-                aError = nil;
-                [audioSession setActive:YES error:&aError];
-                if (aError) {
-                    if (!self.disableLogs) {
-                        NSLog(@"set active error:%@",[aError description]);
-                    }
-                }
-                //audioSession.delegate = self;
             }
+            aError = nil;
+            [audioSession setActive:YES error:&aError];
+            if (aError) {
+                if (!self.disableLogs) {
+                    NSLog(@"set active error:%@",[aError description]);
+                }
+            }
+            //audioSession.delegate = self;
         }
-//    }else {
-//        if (!self.disableLogs) {
-//            NSLog(@"unable to register background playback");
-//        }
-//    }
+    }
+    //    }else {
+    //        if (!self.disableLogs) {
+    //            NSLog(@"unable to register background playback");
+    //        }
+    //    }
     
     [self longTimeBufferBackground];
 }
@@ -830,7 +829,7 @@ static dispatch_once_t onceToken;
     NSError *error;
     tookAudioFocus = NO;
     [[AVAudioSession sharedInstance] setActive:NO error:&error];
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    //[[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     
     [self.audioPlayer removeObserver:self forKeyPath:@"status" context:nil];
@@ -840,8 +839,8 @@ static dispatch_once_t onceToken;
     [self removeAllItems];
     
     [self.audioPlayer pause];
-//    self.delegate = nil;
-//    self.datasource = nil;
+    //    self.delegate = nil;
+    //    self.datasource = nil;
     self.audioPlayer = nil;
     
     onceToken = 0;
