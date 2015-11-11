@@ -128,7 +128,7 @@ static dispatch_once_t onceToken;
         [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     }
 
-    if (audioSession.category != AVAudioSessionCategoryPlayback) {
+    //if (audioSession.category != AVAudioSessionCategoryPlayback) {
         UIDevice *device = [UIDevice currentDevice];
         if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
             if (device.multitaskingSupported) {
@@ -150,11 +150,11 @@ static dispatch_once_t onceToken;
                 //audioSession.delegate = self;
             }
         }
-    }else {
-        if (!self.disableLogs) {
-            NSLog(@"unable to register background playback");
-        }
-    }
+//    }else {
+//        if (!self.disableLogs) {
+//            NSLog(@"unable to register background playback");
+//        }
+//    }
     
     [self longTimeBufferBackground];
 }
